@@ -1,22 +1,10 @@
 package gcloudtracer
 
-import (
-	"errors"
-
-	"google.golang.org/api/option"
-)
-
-var (
-	// ErrInvalidProjectID occurs if project identifier is invalid.
-	ErrInvalidProjectID = errors.New("invalid project id")
-)
-
 // Options containes options for recorder and StackDriver client.
 type Options struct {
-	external []option.ClientOption
-
-	log       Logger
-	projectID string
+	log         Logger
+	projectID   string
+	credentials JWTCredentials
 }
 
 // Valid validates Options.
@@ -44,9 +32,16 @@ func WithLogger(logger Logger) Option {
 	}
 }
 
-// WithClientOption retuns an option that specifies GRPC client Options.
-func WithClientOption(opts ...option.ClientOption) Option {
+// JWTCredentials represents the json file from the google Appplication Default Configuration
+type JWTCredentials struct {
+	Email        string
+	PrivateKey   []byte
+	PrivateKeyID string
+}
+
+// WithJWTCredentials retuns an option that the JWT Credentials.
+func WithJWTCredentials(credentials JWTCredentials) Option {
 	return func(o *Options) {
-		o.external = append(o.external, opts...)
+		o.credentials = credentials
 	}
 }
